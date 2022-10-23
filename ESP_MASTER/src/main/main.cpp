@@ -13,10 +13,8 @@
 DS3231_Simple Clock;
 DateTime MyDateAndTime;
 
-Adafruit_INA219 ina219; //DEFAULT ADRRES 0x40 A1->GND A0->GND
 
 MODBUS Sensors;
-SIM_808 GPRS_MODULE;
 
 void time_to_String(){
   char arrayCharTime[25];
@@ -39,18 +37,7 @@ void time_to_String(){
 bool postData(){
   uint8_t postAttempts = 0;
   while (postAttempts < 5) {
-    Sprintln(F("Trying to post..."));
-    if (GPRS_MODULE.postJson(jsonRoot)) {
-      return true;
-    }
-    else{
-      postAttempts++;
-      bool _INIT=0;
-      while(!_INIT){
-        GPRS_MODULE.RESET_SIM808();
-        _INIT = GPRS_MODULE.setup_SIM808();
-      }
-    }
+
   }
   return false;
 }

@@ -21,61 +21,61 @@ uint8_t uvSensorCounter=0;
 uint8_t parSensorCounter=0;
 uint8_t totalrSensorCounter=0;
 
-// uint8_t MODBUS::detect_type(uint8_t addressSensor){
-//     uint8_t type_sensor;
-//     if (addressSensor == 0x01){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_WS;
-//     } 
-//     if ((addressSensor >= 0x02) && (addressSensor <= 0x04)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_WS2;
-//     } 
-//     else if ((addressSensor >= 0x05) && (addressSensor <= 0x06)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_WD;
-//     }
-//     else if ((addressSensor >= 0x07) && (addressSensor <= 0x08)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_WD2;
-//     }
-//     else if ((addressSensor >= 0x09) && (addressSensor <= 0x0B)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_W;
-//     }
-//     else if ((addressSensor >= 0x0C) && (addressSensor <= 0x0F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_W2;
-//     }
-//     else if ((addressSensor >= 0x10) && (addressSensor <= 0x1F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_SOIL;
-//     }
-//     else if ((addressSensor >= 0x20) && (addressSensor <= 0x2F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_THP;
-//     }
-//     else if ((addressSensor >= 0x30) && (addressSensor <= 0x3F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_PH;
-//     }
-//     else if ((addressSensor >= 0x40) && (addressSensor <= 0x9F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_PH_EL;
-//     }
-//     else if ((addressSensor >= 0x50) && (addressSensor <= 0x5F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_NPK;
-//     }
-//     else if ((addressSensor >= 0x60) && (addressSensor <= 0x6F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_WP;
-//     }
-//     else if ((addressSensor >= 0x70) && (addressSensor <= 0x7F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_UV;
-//     }
-//     else if ((addressSensor >= 0x80) && (addressSensor <= 0x8F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_PAR;
-//     }
-//     else if ((addressSensor >= 0x90) && (addressSensor <= 0x95)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_TOTALR;
-//     }
-//     else if ((addressSensor >= 0x96) && (addressSensor <= 0x9F)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_RT;
-//     }
-//     else if ((addressSensor >= 0xA0) && (addressSensor <= 0xAF)){
-//         type_sensor = modbus_enum::MODBUS_SENSOR_LEAF;
-//     }
-//     return type_sensor;
-// }
+uint8_t MODBUS::detect_type(uint8_t addressSensor){
+    uint8_t type_sensor;
+    if (addressSensor == 0x01){
+        type_sensor = modbus_enum::MODBUS_SENSOR_WS;
+    } 
+    if ((addressSensor >= 0x02) && (addressSensor <= 0x04)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_WS2;
+    } 
+    else if ((addressSensor >= 0x05) && (addressSensor <= 0x06)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_WD;
+    }
+    else if ((addressSensor >= 0x07) && (addressSensor <= 0x08)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_WD2;
+    }
+    else if ((addressSensor >= 0x09) && (addressSensor <= 0x0B)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_W;
+    }
+    else if ((addressSensor >= 0x0C) && (addressSensor <= 0x0F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_W2;
+    }
+    else if ((addressSensor >= 0x10) && (addressSensor <= 0x1F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_SOIL;
+    }
+    else if ((addressSensor >= 0x20) && (addressSensor <= 0x2F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_THP;
+    }
+    else if ((addressSensor >= 0x30) && (addressSensor <= 0x3F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_PH;
+    }
+    else if ((addressSensor >= 0x40) && (addressSensor <= 0x9F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_PH_EL;
+    }
+    else if ((addressSensor >= 0x50) && (addressSensor <= 0x5F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_NPK;
+    }
+    else if ((addressSensor >= 0x60) && (addressSensor <= 0x6F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_WP;
+    }
+    else if ((addressSensor >= 0x70) && (addressSensor <= 0x7F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_UV;
+    }
+    else if ((addressSensor >= 0x80) && (addressSensor <= 0x8F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_PAR;
+    }
+    else if ((addressSensor >= 0x90) && (addressSensor <= 0x95)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_TOTALR;
+    }
+    else if ((addressSensor >= 0x96) && (addressSensor <= 0x9F)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_RT;
+    }
+    else if ((addressSensor >= 0xA0) && (addressSensor <= 0xAF)){
+        type_sensor = modbus_enum::MODBUS_SENSOR_LEAF;
+    }
+    return type_sensor;
+}
 
 //0x01 address available for wind speed sensor (4800 bauds) (version 1, cant change baud rate and address)
 //0x02 to 0x04 address available for wind speed sensor (version 2)
@@ -95,7 +95,6 @@ uint8_t totalrSensorCounter=0;
 //0xA0 to 0xAF addresses available for Leaf sensor (Temperature, leaf humidity)
 
 uint8_t sensorAddresses[] = {0x60,0x61,0xA0,0xA1,0x10,0x11,0x30,0x31,0x20,0x50};
-//uint8_t sensorAddresses[] = {0x50};
 
 void MODBUS::swap_bytes(uint16_t *byte)
 {
