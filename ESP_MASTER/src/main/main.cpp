@@ -1,20 +1,36 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
-#include <SPI.h>
 #include <Stream.h>
-#include <Adafruit_FONA.h>
 #include "DS3231/DS3231_Simple.h"
 #include "main/main.h"
 #include <modbus/modbus.h>
 #include "macro.h"
 #include <Wire.h>
-#include <Adafruit_INA219/Adafruit_INA219.h>
+#include "json/json.h"
+#include <WiFi.h>
+#include "time.h"
+
+const char * ssid="REPLACE_WITH_YOUR_SSID";
+const char * password="REPLACE_WITH_YOUR_PASSWORD";
+
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 18000;   //Replace with your GMT offset (seconds)
+const int   daylightOffset_sec = 0;  //Replace with your daylight offset (seconds)
+
 
 DS3231_Simple Clock;
 DateTime MyDateAndTime;
 
-
 MODBUS Sensors;
+
+void printLocalTime(){
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+}
 
 void time_to_String(){
   char arrayCharTime[25];
@@ -37,17 +53,16 @@ void time_to_String(){
 bool postData(){
   uint8_t postAttempts = 0;
   while (postAttempts < 5) {
-
   }
   return false;
 }
 
 void checktime(){
-  printTime();
+  //printTime();
   uint8_t AlarmsFired = Clock.checkAlarms();
   if(AlarmsFired & 2)
   {
-    MyDateAndTime = Clock.read();
+    MyDateAndTime = Clock.read();//post time
     if(MyDateAndTime.Minute % PostTime  == 00){
       printTime();
       Sprintln(F("Time to make measures"));
@@ -56,19 +71,15 @@ void checktime(){
         Sprintln(F("Tiempo perdido, volviendo a setear el tiempo"));
         setTime();
       }
-      init_Json();
-      time_to_String();
-      CheckPower();
-      GPRS_MODULE.updateGps();
+      time_to_String();//to json
       Sensors.makeMeasures();
       Sprintln(F("Posting data.."));
       bool postState = postData();
       if(postState){
         Sprintln(F("Post Success!"));
-        BlinkyPost();
       }
       else{
-        Sprintln(F("Post Error, waiting next measures"));
+        Sprintln(F("Post Error"));
       }
     }
   }
@@ -83,25 +94,20 @@ void setAlarm(){
 
 void setTime(){
   Sprintln(F("Setting time..  "));
-  uint8_t year =0, month = 0, day = 0, hour = 0, minute = 0, second = 0; 
-
-  bool state = GPRS_MODULE.getTime(&year, &month, &day, &hour, &minute, &second);
-  if (state){  
+  struct tm timeinfo_;
+  if(getLocalTime(&timeinfo_)){//time obtained 
     DateTime MyTimestamp;
-    MyTimestamp.Day    = day;
-    MyTimestamp.Month  = month;
-    MyTimestamp.Year   = year; 
-    MyTimestamp.Hour   = hour;
-    MyTimestamp.Minute = minute;
-    MyTimestamp.Second = second;
+    MyTimestamp.Day    = timeinfo_.tm_mday;
+    MyTimestamp.Month  = timeinfo_.tm_mon+1;
+    MyTimestamp.Year   = timeinfo_.tm_year+1900; 
+    MyTimestamp.Hour   = timeinfo_.tm_hour;
+    MyTimestamp.Minute = timeinfo_.tm_min;
+    MyTimestamp.Second = timeinfo_.tm_sec;
     Clock.write(MyTimestamp);
     Sprintln(F("Date updated correctly"));
-
   }
   else{
     Sprintln(F("Error obtaining date"));
-    GPRS_MODULE.RESET_SIM808();
-    delay(60000);
   }
 }
 
@@ -118,13 +124,22 @@ void printTime(){
 }
 
 void setup() {
-
   Serial.begin(SERIAL_BAUDRATE);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+  }
+  Serial.println("CONNECTED to WIFI");
+
+  //init and get the time
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
 
   setAlarm();
 }
 
 void loop() {
   checktime(); 
-  //CheckPow();
 }

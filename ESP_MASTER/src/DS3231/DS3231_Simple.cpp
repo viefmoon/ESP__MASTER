@@ -1,4 +1,5 @@
 #include <DS3231/DS3231_Simple.h>
+#include <Arduino.h>
 
 void DS3231_Simple::begin()
 {  

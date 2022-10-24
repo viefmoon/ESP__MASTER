@@ -28,8 +28,10 @@
 
 #define MaxAttempts 6
 
+#define RXD2 16
+#define TXD2 17
 #define MODBUS_SERIAL Serial2
-#define MODBUS_SERIAL_BAUDRATE 19200 //real baud rate*2
+#define MODBUS_SERIAL_BAUDRATE 9600
 
 ////swap bytes (measurements) 
 #define PH_BYTE_LENGHT      0x0300  //PH sensor (AgCi version) version
@@ -144,7 +146,7 @@ namespace modbus_structs
 
     typedef struct
     {
-        int16_t water_potential;
+        uint16_t water_potential;
     } rawWp;
 
 
