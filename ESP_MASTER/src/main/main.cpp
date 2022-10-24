@@ -72,7 +72,7 @@ void checktime(){
         setTime();
       }
       time_to_String();//to json
-      Sensors.makeMeasures();
+      Sensors.makeMeasures();//adding all measures to json
       Sprintln(F("Posting data.."));
       bool postState = postData();
       if(postState){
@@ -141,5 +141,10 @@ void setup() {
 }
 
 void loop() {
+
+  float EC  = Sensors.ModBus_MakeCMD_EC(0x60,modbus_enum::MODBUS_CMD_READ);//EC
+  float CO2 = Sensors.ModBus_MakeCMD_CO2(0x60,modbus_enum::MODBUS_CMD_READ);//EC
+  float LV0 = Sensors.ModBus_MakeCMD_LV0(0x60,modbus_enum::MODBUS_CMD_READ);//EC
+  float LV1 = Sensors.ModBus_MakeCMD_LV1(0x60,modbus_enum::MODBUS_CMD_READ);//EC
   checktime(); 
 }

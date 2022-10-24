@@ -411,12 +411,19 @@ class MODBUS
 
     void RegisterTotalrMeasure(modbus_structs::TotalrSensorMeasure , uint8_t );
 
-
     bool validate_checksum(uint8_t *, uint8_t );
 
     uint8_t detect_type(uint8_t );
 
     bool ModBus_MakeCMD(uint8_t , uint8_t);
+
+    float ModBus_MakeCMD_EC(uint8_t , uint8_t);
+
+    float ModBus_MakeCMD_CO2(uint8_t , uint8_t);
+
+    float ModBus_MakeCMD_LV0(uint8_t , uint8_t);
+
+    float ModBus_MakeCMD_LV1(uint8_t , uint8_t);
 
     void makeMeasures();
 

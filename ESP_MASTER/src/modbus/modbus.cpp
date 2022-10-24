@@ -740,7 +740,7 @@ bool MODBUS::ModBus_MakeCMD(uint8_t address, uint8_t function_code)
 
     cmd.tx_crc = MODBUS::calculate_crc16((uint8_t *)&cmd, 6);
 
-    if(dataBytes>0){
+    if(dataBytes>0){//El sensor esta registrado y es compatible
         uint8_t attempts=0;
         bool Check_CRC = false;
         while (Check_CRC == false && attempts < MaxAttempts) {
@@ -753,7 +753,7 @@ bool MODBUS::ModBus_MakeCMD(uint8_t address, uint8_t function_code)
                 uint8_t *buffer_data = &buffer[3]; // the data come after 3 bytes |adress| |cmd| |byte length| |DATA|
 
                 Check_CRC = validate_checksum(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes);
-                if(Check_CRC){
+                if(Check_CRC){//Registro de mediciones
                     switch (sensor_type)
                     {
                     case modbus_enum::MODBUS_SENSOR_WS:
@@ -892,6 +892,269 @@ bool MODBUS::ModBus_MakeCMD(uint8_t address, uint8_t function_code)
     return false;
 }
 
+float MODBUS::ModBus_MakeCMD_EC(uint8_t address, uint8_t function_code)
+{
+    uint8_t sensor_type = MODBUS::detect_type(address);
+    uint8_t dataBytes = 0;
+
+    modbus_structs::Modbus_tx_frame cmd = {address, 0x00, 0x0000, 0x0000, 0x0000};
+
+    switch (function_code)
+    {
+    case modbus_enum::MODBUS_CMD_READ:
+        cmd.tx_functionCode = MODBUS_CMD_READ_BYTE;
+        break;
+    }
+
+    switch (sensor_type)
+    {
+    case modbus_enum::MODBUS_SENSOR_SOIL:
+        Sprintln(F("ID FROM SOIL"));
+        soilSensorCounter++;
+        cmd.registerStartAddress = SOIL_START_ADDRESS;
+        cmd.registerLength = SOIL_BYTE_LENGHT;
+        dataBytes = 6;
+        break;
+    }
+
+    cmd.tx_crc = MODBUS::calculate_crc16((uint8_t *)&cmd, 6);
+
+    if(dataBytes>0){//El sensor esta registrado y es compatible
+        uint8_t attempts=0;
+        bool Check_CRC = false;
+        while (Check_CRC == false && attempts < MaxAttempts) {
+            uint8_t buffer[RX_LENGHT_WITHOUT_DATA + dataBytes]; 
+            attempts++;
+            MODBUS_SERIAL.write((uint8_t*)&cmd, sizeof(cmd));
+            MODBUS_SERIAL.setTimeout(2000);
+            if ((MODBUS_SERIAL.readBytes(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes))==(RX_LENGHT_WITHOUT_DATA + dataBytes)){
+
+                uint8_t *buffer_data = &buffer[3]; // the data come after 3 bytes |adress| |cmd| |byte length| |DATA|
+
+                Check_CRC = validate_checksum(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes);
+                if(Check_CRC){//Registro de mediciones
+                    switch (sensor_type)
+                    {
+                    case modbus_enum::MODBUS_SENSOR_SOIL:
+                        {
+                        modbus_structs::SoilSensorMeasure soilMeasures = MODBUS::buffer_to_soil(buffer_data);
+                        return soilMeasures.ec;
+                        }
+                        break;
+                    }
+                }
+                else{
+                    Sprintln(F("BAD CRC "));
+                }
+            }
+            else{
+                Sprintln(F("Error en la respuesta"));
+            }
+        }
+    }
+    else{
+        Sprintln(F("Sensor no registrado"));
+    }
+    return false;
+}
+
+float MODBUS::ModBus_MakeCMD_CO2(uint8_t address, uint8_t function_code)
+{
+    uint8_t sensor_type = MODBUS::detect_type(address);
+    uint8_t dataBytes = 0;
+
+    modbus_structs::Modbus_tx_frame cmd = {address, 0x00, 0x0000, 0x0000, 0x0000};
+
+    switch (function_code)
+    {
+    case modbus_enum::MODBUS_CMD_READ:
+        cmd.tx_functionCode = MODBUS_CMD_READ_BYTE;
+        break;
+    }
+
+    switch (sensor_type)
+    {
+    case modbus_enum::MODBUS_SENSOR_SOIL:
+        Sprintln(F("ID FROM SOIL"));
+        soilSensorCounter++;
+        cmd.registerStartAddress = SOIL_START_ADDRESS;
+        cmd.registerLength = SOIL_BYTE_LENGHT;
+        dataBytes = 6;
+        break;
+    }
+
+    cmd.tx_crc = MODBUS::calculate_crc16((uint8_t *)&cmd, 6);
+
+    if(dataBytes>0){//El sensor esta registrado y es compatible
+        uint8_t attempts=0;
+        bool Check_CRC = false;
+        while (Check_CRC == false && attempts < MaxAttempts) {
+            uint8_t buffer[RX_LENGHT_WITHOUT_DATA + dataBytes]; 
+            attempts++;
+            MODBUS_SERIAL.write((uint8_t*)&cmd, sizeof(cmd));
+            MODBUS_SERIAL.setTimeout(2000);
+            if ((MODBUS_SERIAL.readBytes(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes))==(RX_LENGHT_WITHOUT_DATA + dataBytes)){
+
+                uint8_t *buffer_data = &buffer[3]; // the data come after 3 bytes |adress| |cmd| |byte length| |DATA|
+
+                Check_CRC = validate_checksum(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes);
+                if(Check_CRC){//Registro de mediciones
+                    switch (sensor_type)
+                    {
+                    case modbus_enum::MODBUS_SENSOR_SOIL:
+                        {
+                        modbus_structs::SoilSensorMeasure soilMeasures = MODBUS::buffer_to_soil(buffer_data);
+                        return soilMeasures.ec;
+                        }
+                        break;
+                    }
+                }
+                else{
+                    Sprintln(F("BAD CRC "));
+                }
+            }
+            else{
+                Sprintln(F("Error en la respuesta"));
+            }
+        }
+    }
+    else{
+        Sprintln(F("Sensor no registrado"));
+    }
+    return false;
+}
+
+float MODBUS::ModBus_MakeCMD_LV1(uint8_t address, uint8_t function_code)
+{
+    uint8_t sensor_type = MODBUS::detect_type(address);
+    uint8_t dataBytes = 0;
+
+    modbus_structs::Modbus_tx_frame cmd = {address, 0x00, 0x0000, 0x0000, 0x0000};
+
+    switch (function_code)
+    {
+    case modbus_enum::MODBUS_CMD_READ:
+        cmd.tx_functionCode = MODBUS_CMD_READ_BYTE;
+        break;
+    }
+
+    switch (sensor_type)
+    {
+    case modbus_enum::MODBUS_SENSOR_SOIL:
+        Sprintln(F("ID FROM SOIL"));
+        soilSensorCounter++;
+        cmd.registerStartAddress = SOIL_START_ADDRESS;
+        cmd.registerLength = SOIL_BYTE_LENGHT;
+        dataBytes = 6;
+        break;
+    }
+
+    cmd.tx_crc = MODBUS::calculate_crc16((uint8_t *)&cmd, 6);
+
+    if(dataBytes>0){//El sensor esta registrado y es compatible
+        uint8_t attempts=0;
+        bool Check_CRC = false;
+        while (Check_CRC == false && attempts < MaxAttempts) {
+            uint8_t buffer[RX_LENGHT_WITHOUT_DATA + dataBytes]; 
+            attempts++;
+            MODBUS_SERIAL.write((uint8_t*)&cmd, sizeof(cmd));
+            MODBUS_SERIAL.setTimeout(2000);
+            if ((MODBUS_SERIAL.readBytes(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes))==(RX_LENGHT_WITHOUT_DATA + dataBytes)){
+
+                uint8_t *buffer_data = &buffer[3]; // the data come after 3 bytes |adress| |cmd| |byte length| |DATA|
+
+                Check_CRC = validate_checksum(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes);
+                if(Check_CRC){//Registro de mediciones
+                    switch (sensor_type)
+                    {
+                    case modbus_enum::MODBUS_SENSOR_SOIL:
+                        {
+                        modbus_structs::SoilSensorMeasure soilMeasures = MODBUS::buffer_to_soil(buffer_data);
+                        return soilMeasures.ec;
+                        }
+                        break;
+                    }
+                }
+                else{
+                    Sprintln(F("BAD CRC "));
+                }
+            }
+            else{
+                Sprintln(F("Error en la respuesta"));
+            }
+        }
+    }
+    else{
+        Sprintln(F("Sensor no registrado"));
+    }
+    return false;
+}
+
+float MODBUS::ModBus_MakeCMD_LV0(uint8_t address, uint8_t function_code)
+{
+    uint8_t sensor_type = MODBUS::detect_type(address);
+    uint8_t dataBytes = 0;
+
+    modbus_structs::Modbus_tx_frame cmd = {address, 0x00, 0x0000, 0x0000, 0x0000};
+
+    switch (function_code)
+    {
+    case modbus_enum::MODBUS_CMD_READ:
+        cmd.tx_functionCode = MODBUS_CMD_READ_BYTE;
+        break;
+    }
+
+    switch (sensor_type)
+    {
+    case modbus_enum::MODBUS_SENSOR_SOIL:
+        Sprintln(F("ID FROM SOIL"));
+        soilSensorCounter++;
+        cmd.registerStartAddress = SOIL_START_ADDRESS;
+        cmd.registerLength = SOIL_BYTE_LENGHT;
+        dataBytes = 6;
+        break;
+    }
+
+    cmd.tx_crc = MODBUS::calculate_crc16((uint8_t *)&cmd, 6);
+
+    if(dataBytes>0){//El sensor esta registrado y es compatible
+        uint8_t attempts=0;
+        bool Check_CRC = false;
+        while (Check_CRC == false && attempts < MaxAttempts) {
+            uint8_t buffer[RX_LENGHT_WITHOUT_DATA + dataBytes]; 
+            attempts++;
+            MODBUS_SERIAL.write((uint8_t*)&cmd, sizeof(cmd));
+            MODBUS_SERIAL.setTimeout(2000);
+            if ((MODBUS_SERIAL.readBytes(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes))==(RX_LENGHT_WITHOUT_DATA + dataBytes)){
+
+                uint8_t *buffer_data = &buffer[3]; // the data come after 3 bytes |adress| |cmd| |byte length| |DATA|
+
+                Check_CRC = validate_checksum(buffer, RX_LENGHT_WITHOUT_DATA + dataBytes);
+                if(Check_CRC){//Registro de mediciones
+                    switch (sensor_type)
+                    {
+                    case modbus_enum::MODBUS_SENSOR_SOIL:
+                        {
+                        modbus_structs::SoilSensorMeasure soilMeasures = MODBUS::buffer_to_soil(buffer_data);
+                        return soilMeasures.ec;
+                        }
+                        break;
+                    }
+                }
+                else{
+                    Sprintln(F("BAD CRC "));
+                }
+            }
+            else{
+                Sprintln(F("Error en la respuesta"));
+            }
+        }
+    }
+    else{
+        Sprintln(F("Sensor no registrado"));
+    }
+    return false;
+}
 
 void MODBUS::makeMeasures()
 {
